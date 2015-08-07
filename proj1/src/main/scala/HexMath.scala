@@ -4,7 +4,7 @@ object HexMath {
   // functions for normal coordinates (problem statement)
 
   def toCube(x: Int, y: Int): (Int, Int, Int) = {
-    val xp = x - (y/2)
+    val xp = x - math.floor(y / 2.0).toInt
     (xp, y, -xp - y)
   }
 
@@ -19,7 +19,7 @@ object HexMath {
   // functions for cube coordinates (http://www.redblobgames.com/grids/hexagons/)
 
   def fromCube(x: Int, y: Int, z: Int): (Int, Int) = {
-    (x + (y/2), y)
+    (x + math.floor(y / 2.0).toInt, y)
   }
 
   def rotateCenter(x: Int, y: Int, z: Int, isClockWise: Boolean): (Int, Int, Int) = {
