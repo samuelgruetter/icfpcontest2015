@@ -9,6 +9,6 @@ object RandomStream{
       seed,
       s.map(x => (x * multiplier + increment) & modulusMask)
     )
-    s.map(x => (x & 2147418112) >> 16) // get only bits 30..16
+    s.map(x => (x & 0x7fff0000) >> 16) // get only bits 30..16
   }
 }
