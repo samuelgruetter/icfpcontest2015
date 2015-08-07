@@ -10,9 +10,9 @@ object MyJsonProtocol extends DefaultJsonProtocol {
 import MyJsonProtocol._
 
 object JsonRead {
-  def problemFromFile(path: String): Unit = {
+  def problemFromFile(path: String): Problem = {
     val rawContent = Source.fromFile(path).mkString
     val problem = JsonParser(rawContent).convertTo[Problem]
-    println(problem)
+    problem
   }
 }
