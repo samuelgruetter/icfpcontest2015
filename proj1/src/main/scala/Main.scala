@@ -14,15 +14,19 @@ class HexGrid(val width: Int, val height: Int) {
   private val grid: ArrayBuffer[ArrayBuffer[GridCell]] =
     ArrayBuffer.fill(width)(ArrayBuffer.fill(height)(EmptyCell))
 
-  private var _currentUnitPivot: (Int, Int) = (0, 0)
-  def currentUnitPivot: (Int, Int) = _currentUnitPivot
+  var currentUnitCenter: Option[(Int, Int)] = None
 
-  /** places u on the grid such that u's local (0,0) is at (x0,y0) */
+  var currentUnit: Option[Unitt] = None
+
+  def currentUnitPivot: (Int, Int) =
+    (currentUnitCenter.get._1 + currentUnit.get.pivot.x, currentUnitCenter.get._2 + currentUnit.get.pivot.y)
+
+  /** places u on the grid such that u's local (0,0) is at (x0,y0)
   def placeUnitAt(u: Unitt, x0: Int, y0: Int): Unit = {
     for (Cell(x, y) <- u.members) setCell(x0 + x, y0 + y, UnitCell)
-  }
+  }*/
 
-  def placeUnit(u: Unitt): Boolean = {
+  def placeUnit(u: Unitt): (Int, Int) = {
     val xLeftRel = u.leftmost
     val xRightRel = u.rightmost
     val w = xRightRel - xLeftRel + 1
@@ -31,8 +35,7 @@ class HexGrid(val width: Int, val height: Int) {
 
     val yCenterAbs = -u.topmost
 
-    placeUnitAt(u, xCenterAbs, yCenterAbs)
-    true
+    (xCenterAbs, yCenterAbs)
   }
 
   def cell(x: Int, y: Int): GridCell = grid(x)(y)
@@ -44,11 +47,34 @@ class HexGrid(val width: Int, val height: Int) {
     for (y <- 0 until height) {
       if (y % 2 == 1) ps.print(" ")
       for (x <- 0 until width) {
-        ps.print(cell(x,y).toChar)
+        ps.print(cellToChar(x, y))
         ps.print(" ")
       }
       ps.println()
     }
+  }
+
+  def isCoveredByUnit(x: Int, y: Int): Boolean = currentUnit match {
+    // members are in relative coordinates
+    case Some(cu) => cu.members.contains(Cell(x-currentUnitCenter.get._1, y-currentUnitCenter.get._2))
+    case None => false
+  }
+
+  def isCurrentUnitPivot(x: Int, y: Int): Boolean = currentUnitCenter match {
+    case Some(cuc) => (x, y) == currentUnitPivot
+    case None => false
+  }
+
+  def cellToChar(x: Int, y: Int): Char = {
+    if (isCurrentUnitPivot(x, y)) {
+      if (isCoveredByUnit(x, y)) 'P' else 'p'
+    } else {
+      if (isCoveredByUnit(x, y)) 'u' else cell(x, y).toChar
+    }
+  }
+
+  def allNeighbors(x: Int, y: Int): Iterable[(Int, Int)] = {
+    Iterable() // TODO
   }
 }
 
@@ -63,16 +89,16 @@ case object EmptyCell extends GridCell {
 case class UnitCell(unitt: Unitt) extends GridCell {
   def toChar = '0'
 }
-*/
 case object UnitCell extends GridCell {
   def toChar = 'u'
 }
-
+*/
 case object FullCell extends GridCell {
   def toChar = 'X'
 }
 
 object Main {
+  /*
   def main0(args: Array[String]): Unit = {
     println("hello world")
 
@@ -87,6 +113,7 @@ object Main {
 
     g.printTo(System.out)
   }
+  */
 
   def printAllProbs: Unit = {
     for (i <- 0 to 23) {
@@ -114,7 +141,8 @@ object Main {
     val problem = JsonRead.problemFromFile("../probs/problem_18.json")
     val grid = HexGrid(problem)
 
-    grid.placeUnit(problem.units(25))
+    grid.currentUnitCenter = Some(grid.placeUnit(problem.units(25)))
+    grid.currentUnit = Some(problem.units(25))
 
     grid.printTo(System.out)
 
