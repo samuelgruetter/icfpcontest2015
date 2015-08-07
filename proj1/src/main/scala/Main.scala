@@ -45,7 +45,7 @@ class HexGrid(val width: Int, val height: Int) {
 
   def printTo(ps: PrintStream): Unit = {
     for (y <- 0 until height) {
-      if (y % 2 == 1) ps.print(" ")
+      if (y % 2 != 0) ps.print(" ")
       for (x <- 0 until width) {
         ps.print(cellToChar(x, y))
         ps.print(" ")
