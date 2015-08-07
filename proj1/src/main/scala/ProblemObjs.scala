@@ -6,7 +6,12 @@ import scala.math.{min, max}
 case class Cell(
   x: Int,
   y: Int
-)
+) {
+  def rotate(pivot: Cell, isClockWise: Boolean): Cell = {
+    val (newx, newy) = HexMath.rotate(x, y, pivot.x, pivot.y, isClockWise)
+    Cell(newx, newy)
+  }
+}
 
 case class Unitt(
   members: List[Cell],
@@ -16,6 +21,10 @@ case class Unitt(
   def rightmost: Int = members.maxBy(_.x).x
   def topmost: Int = members.minBy(_.y).y
   def bottommost: Int = members.maxBy(_.y).y
+
+  def rotate(isClockWise: Boolean): Unitt = {
+    Unitt(members.map(c => c.rotate(pivot, isClockWise)), pivot)
+  }
 
   def printMapTo(ps: PrintStream): Unit = {
     val lm = min(leftmost, pivot.x)

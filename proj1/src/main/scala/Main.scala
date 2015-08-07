@@ -145,6 +145,5 @@ object Main {
     grid.currentUnit = Some(problem.units(25))
 
     grid.printTo(System.out)
-
   }
 }
