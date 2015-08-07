@@ -36,7 +36,7 @@ case class Unitt(
     }
 
     for (y <- tm to bm) {
-      if (y % 2 == 1) ps.print(" ")
+      if (y % 2 != 0) ps.print(" ")
       for (x <- lm to rm) {
         ps.print(buf(x - lm)(y - tm))
         ps.print(" ")
