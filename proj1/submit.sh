@@ -1,3 +1,5 @@
+set -e
+
 source credentials.sh
 
 if [ ! -f target/start ]; then
