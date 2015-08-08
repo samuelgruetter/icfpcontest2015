@@ -10,22 +10,8 @@
 case class Solution(problemId: Int, seed: Int, solution: String)
 
 object SolutionCompanion {
-  /*
-  {p, ', !, ., 0, 3}       move W
-  {b, c, e, f, y, 2}       move E
-  {a, g, h, i, j, 4}       move SW
-  {l, m, n, o, space, 5}   move SE
-  {d, q, r, v, z, 1}       rotate clockwise
-  {k, s, t, u, w, x}       rotate counter-clockwise
-  */
-  def moveToChar(m: ForwardDirection): Char = m match {
-    case West => '3'
-    case East => '2'
-    case SouthWest => '4'
-    case SouthEast => '5'
-  }
 
-  def apply(problemId: Int, seed: Int, commands: Seq[ForwardDirection]): Solution = {
-    Solution(problemId, seed, commands.toIterator.map(moveToChar).mkString)
+  def apply(problemId: Int, seed: Int, commands: Seq[Move]): Solution = {
+    Solution(problemId, seed, commands.toIterator.map(_.toChar).mkString)
   }
 }

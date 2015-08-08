@@ -90,7 +90,6 @@ class HexGrid(val width: Int, val height: Int) {
     
     unitCenter = Cell(xCenterAbs, yCenterAbs).toAxial
     unit = u.toAxial
-    println()
   }
 
   def printTo(ps: PrintStream): Unit = {

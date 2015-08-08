@@ -24,7 +24,7 @@ object Main2 {
     val units = RandomStream(seed).take(problem.sourceLength)
       .map(rand => problem.units(rand % problem.units.length))
 
-    val commands = ListBuffer[ForwardDirection]()
+    val commands = ListBuffer[Move]()
     var stuck = false
     var remainingUnits = units
     while (!stuck && remainingUnits.nonEmpty) {
@@ -39,10 +39,9 @@ object Main2 {
     SolutionCompanion(problem.id, seed, commands)
   }
 
-  def playOneUnit(grid: HexGrid, unit: Unitt, mover: Mover): Option[Seq[ForwardDirection]] = {
-    grid.unitCenter = grid.placeUnit(unit)
-    grid.unit = unit
-    if (grid.canPlaceCurrentUnitAt(grid.unitCenter._1, grid.unitCenter._2)) {
+  def playOneUnit(grid: HexGrid, unit: Unitt, mover: Mover): Option[Seq[Move]] = {
+    grid.spawnUnit(unit)
+    if (grid.canPlaceCurrentUnitAt(grid.unitCenter)) {
       Some(mover(grid))
     } else {
       None
