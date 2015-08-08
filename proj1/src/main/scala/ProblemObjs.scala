@@ -26,6 +26,7 @@ case class Unitt(
     Unitt(members.map(c => c.rotate(pivot, isClockWise)), pivot)
   }
 
+  // assumes offset coordinates
   def printMapTo(ps: PrintStream): Unit = {
     val lm = min(leftmost, pivot.x)
     val rm = max(rightmost, pivot.x)
@@ -53,6 +54,10 @@ case class Unitt(
       ps.println()
     }
   }
+}
+
+object UnittCompanion {
+  def empty: Unitt = Unitt(Nil, Cell(-1000000000, -1000000000))
 }
 
 case class Problem(

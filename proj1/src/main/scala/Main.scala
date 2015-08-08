@@ -16,12 +16,12 @@ class HexGrid(val width: Int, val height: Int) {
   private val grid: ArrayBuffer[ArrayBuffer[GridCell]] =
     ArrayBuffer.fill(width)(ArrayBuffer.fill(height)(EmptyCell))
 
-  var currentUnitCenter: Option[(Int, Int)] = None
+  var unitCenter: (Int, Int) = (-1000000000, -1000000000)
 
-  var currentUnit: Option[Unitt] = None
+  var unit: Unitt = UnittCompanion.empty
 
   def currentUnitPivot: (Int, Int) =
-    (currentUnitCenter.get._1 + currentUnit.get.pivot.x, currentUnitCenter.get._2 + currentUnit.get.pivot.y)
+    (unitCenter._1 + unit.pivot.x, unitCenter._2 + unit.pivot.y)
 
   /** places u on the grid such that u's local (0,0) is at (x0,y0)
   def placeUnitAt(u: Unitt, x0: Int, y0: Int): Unit = {
@@ -29,17 +29,17 @@ class HexGrid(val width: Int, val height: Int) {
   }*/
 
   def canPlaceCurrentUnitAt(x0: Int, y0: Int): Boolean = {
-    currentUnit.get.members.forall(c => cell(x0+c.x, y0+c.y) == EmptyCell)
+    unit.members.forall(c => cell(x0+c.x, y0+c.y) == EmptyCell)
   }
 
   def canMove(d: Direction): Boolean = {
-    val Cell(x, y) = d.addTo(Cell(currentUnitCenter.get._1, currentUnitCenter.get._2))
+    val Cell(x, y) = d.addTo(Cell(unitCenter._1, unitCenter._2))
     canPlaceCurrentUnitAt(x, y)
   }
 
   def move(d: Direction): Unit = {
-    val Cell(x, y) = d.addTo(Cell(currentUnitCenter.get._1, currentUnitCenter.get._2))
-    currentUnitCenter = Some((x, y))
+    val Cell(x, y) = d.addTo(Cell(unitCenter._1, unitCenter._2))
+    unitCenter = (x, y)
   }
 
   def placeUnit(u: Unitt): (Int, Int) = {
@@ -70,15 +70,13 @@ class HexGrid(val width: Int, val height: Int) {
     }
   }
 
-  def isCoveredByUnit(x: Int, y: Int): Boolean = currentUnit match {
+  def isCoveredByUnit(x: Int, y: Int): Boolean = {
     // members are in relative coordinates
-    case Some(cu) => cu.members.contains(Cell(x-currentUnitCenter.get._1, y-currentUnitCenter.get._2))
-    case None => false
+    unit.members.contains(Cell(x-unitCenter._1, y-unitCenter._2))
   }
 
-  def isCurrentUnitPivot(x: Int, y: Int): Boolean = currentUnitCenter match {
-    case Some(cuc) => (x, y) == currentUnitPivot
-    case None => false
+  def isCurrentUnitPivot(x: Int, y: Int): Boolean = {
+    (x, y) == currentUnitPivot
   }
 
   def cellToChar(x: Int, y: Int): Char = {
@@ -87,10 +85,6 @@ class HexGrid(val width: Int, val height: Int) {
     } else {
       if (isCoveredByUnit(x, y)) 'u' else cell(x, y).toChar
     }
-  }
-
-  def allNeighbors(x: Int, y: Int): Iterable[(Int, Int)] = {
-    Iterable() // TODO
   }
 }
 
@@ -155,8 +149,8 @@ object Main {
     val problem = JsonRead.problemFromFile(s"../probs/problem_$problemId.json")
     val grid = HexGrid(problem)
 
-    grid.currentUnitCenter = Some(grid.placeUnit(problem.units(unitId)))
-    grid.currentUnit = Some(problem.units(unitId))
+    grid.unitCenter = grid.placeUnit(problem.units(unitId))
+    grid.unit = problem.units(unitId)
 
     grid.printTo(System.out)
     println
@@ -166,8 +160,8 @@ object Main {
     val problem = JsonRead.problemFromFile(s"../probs/problem_$problemId.json")
     val grid = HexGrid(problem)
 
-    grid.currentUnitCenter = Some(grid.placeUnit(problem.units(unitId)))
-    grid.currentUnit = Some(problem.units(unitId))
+    grid.unitCenter = grid.placeUnit(problem.units(unitId))
+    grid.unit = problem.units(unitId)
 
     val rd = new Scanner(System.in)
     val rand = new Random()
@@ -195,6 +189,7 @@ object Main {
   }
 
   def main(args: Array[String]): Unit = {
+    main1(args)
     randomlyDown(16, 4)
   }
 }
