@@ -9,3 +9,6 @@ libraryDependencies ++= Seq()
 libraryDependencies += "io.spray" %%  "spray-json" % "1.3.2"
 
 scalacOptions ++= Seq("-deprecation", "-feature")
+
+import com.typesafe.sbt.SbtStartScript
+seq(SbtStartScript.startScriptForClassesSettings: _*)
