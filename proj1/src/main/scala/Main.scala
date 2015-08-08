@@ -1,5 +1,7 @@
 import java.io.PrintStream
+import java.util.Scanner
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
 
 
 object HexGrid {
@@ -25,6 +27,20 @@ class HexGrid(val width: Int, val height: Int) {
   def placeUnitAt(u: Unitt, x0: Int, y0: Int): Unit = {
     for (Cell(x, y) <- u.members) setCell(x0 + x, y0 + y, UnitCell)
   }*/
+
+  def canPlaceCurrentUnitAt(x0: Int, y0: Int): Boolean = {
+    currentUnit.get.members.forall(c => cell(x0+c.x, y0+c.y) == EmptyCell)
+  }
+
+  def canMove(d: Direction): Boolean = {
+    val Cell(x, y) = d.addTo(Cell(currentUnitCenter.get._1, currentUnitCenter.get._2))
+    canPlaceCurrentUnitAt(x, y)
+  }
+
+  def move(d: Direction): Unit = {
+    val Cell(x, y) = d.addTo(Cell(currentUnitCenter.get._1, currentUnitCenter.get._2))
+    currentUnitCenter = Some((x, y))
+  }
 
   def placeUnit(u: Unitt): (Int, Int) = {
     val xLeftRel = u.leftmost
@@ -135,15 +151,50 @@ object Main {
     println
   }
 
-  def main(args: Array[String]): Unit = {
-    printAllProbs
-
-    val problem = JsonRead.problemFromFile("../probs/problem_18.json")
+  def demoUnitPlacing(problemId: Int, unitId: Int): Unit = {
+    val problem = JsonRead.problemFromFile(s"../probs/problem_$problemId.json")
     val grid = HexGrid(problem)
 
-    grid.currentUnitCenter = Some(grid.placeUnit(problem.units(25)))
-    grid.currentUnit = Some(problem.units(25))
+    grid.currentUnitCenter = Some(grid.placeUnit(problem.units(unitId)))
+    grid.currentUnit = Some(problem.units(unitId))
 
     grid.printTo(System.out)
+    println
+  }
+
+  def randomlyDown(problemId: Int, unitId: Int): Unit = {
+    val problem = JsonRead.problemFromFile(s"../probs/problem_$problemId.json")
+    val grid = HexGrid(problem)
+
+    grid.currentUnitCenter = Some(grid.placeUnit(problem.units(unitId)))
+    grid.currentUnit = Some(problem.units(unitId))
+
+    val rd = new Scanner(System.in)
+    val rand = new Random()
+    var locked = false
+    while (!locked) {
+      grid.printTo(System.out)
+      println
+      rd.nextLine()
+
+      val moves = if (rand.nextBoolean()) List(SouthWest, SouthEast) else List(SouthEast, SouthWest)
+      val possibleMoves = moves.filter(grid.canMove)
+      if (possibleMoves.isEmpty) {
+        println("locked")
+        locked = true
+      } else {
+        grid.move(possibleMoves.head)
+      }
+    }
+  }
+
+  def main1(args: Array[String]): Unit = {
+    printAllProbs
+    demoUnitPlacing(18, 25)
+    demoUnitPlacing(16, 4)
+  }
+
+  def main(args: Array[String]): Unit = {
+    randomlyDown(16, 4)
   }
 }
