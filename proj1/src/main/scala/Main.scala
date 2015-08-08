@@ -28,8 +28,13 @@ class HexGrid(val width: Int, val height: Int) {
     for (Cell(x, y) <- u.members) setCell(x0 + x, y0 + y, UnitCell)
   }*/
 
+  /** returns false for cells outside grid */
+  def isCellEmpty(x: Int, y: Int): Boolean = {
+    x >= 0 && x < width && y >= 0 && y < height && cell(x, y) == EmptyCell
+  }
+
   def canPlaceCurrentUnitAt(x0: Int, y0: Int): Boolean = {
-    unit.members.forall(c => cell(x0+c.x, y0+c.y) == EmptyCell)
+    unit.members.forall(c => isCellEmpty(x0+c.x, y0+c.y))
   }
 
   def canMove(d: Direction): Boolean = {
