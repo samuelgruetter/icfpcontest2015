@@ -3,9 +3,9 @@ import DefaultJsonProtocol._
 import scala.io.Source
 
 object MyJsonProtocol extends DefaultJsonProtocol {
-  implicit val cellFormat = jsonFormat2(Cell)
-  implicit val unitFormat = jsonFormat2(Unitt)
-  implicit val problemFormat = jsonFormat7(Problem)
+  implicit val cellFormat = jsonFormat2(Cell.apply)
+  implicit val unitFormat = jsonFormat2(Unitt.apply)
+  implicit val problemFormat = jsonFormat7(Problem.apply)
 }
 import MyJsonProtocol._
 

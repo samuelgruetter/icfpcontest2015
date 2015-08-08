@@ -3,28 +3,60 @@ import java.io.PrintStream
 import scala.collection.mutable.ArrayBuffer
 import scala.math.{min, max}
 
+// a 2d vector
 case class Cell(
   x: Int,
   y: Int
 ) {
-  def rotate(pivot: Cell, isClockWise: Boolean): Cell = {
+  def toAxial = Cell(x + math.floor((y + 1) / 2.0).toInt, y)
+  def toOffset = Cell(x - math.floor((y + 1) / 2.0).toInt, y)
+  
+  // assumes axial coordinates
+  def add(other: Cell) = Cell(x + other.x, y + other.y)
+  
+  // assumes axial coordinates
+  def negative = Cell(-x, -y)
+  
+  
+  def allNeighbors(c: Cell): Iterable[Cell] = Directions.all.map(add(_))
+  def forwardNeighbors(c: Cell): Iterable[Cell] = Directions.forward.map(add(_))
+  def backwardNeighbors(c: Cell): Iterable[Cell] = Directions.backward.map(add(_))
+  def downNeighbors(c: Cell): Iterable[Cell] = Directions.down.map(add(_))
+  
+  /*def rotate(pivot: Cell, isClockWise: Boolean): Cell = {
     val (newx, newy) = HexMath.rotate(x, y, pivot.x, pivot.y, isClockWise)
-    Cell(newx, newy)
+    
+    val (ptx, pty, ptz) = toCube(pointX, pointY)
+    val (pvx, pvy, pvz) = toCube(pivotX, pivotY)
+    val (sx, sy, sz) = (ptx - pvx, pty - pvy, ptz - pvz) // shift so pivot is in the center
+    val (rx, ry, rz) = rotateCenter(sx, sy, sz, isClockWise)
+    fromCube(rx + pvx, ry + pvy, rz + pvz)
+    
+    def rotateCenter(x: Int, y: Int, z: Int, isClockWise: Boolean): (Int, Int, Int) = {
+    if (isClockWise) (-y, -z, -x)
+    else             (-z, -x, -y)
   }
+    
+    Cell(newx, newy)
+  }*/
 }
 
 case class Unitt(
   members: List[Cell],
   pivot: Cell
 ) {
+  def toAxial = Unitt(members.map(_.toAxial), pivot.toAxial)
+  def toOffset = Unitt(members.map(_.toOffset), pivot.toOffset)
+
+  // assumes offset coordinates
   def leftmost: Int = members.minBy(_.x).x
   def rightmost: Int = members.maxBy(_.x).x
   def topmost: Int = members.minBy(_.y).y
   def bottommost: Int = members.maxBy(_.y).y
 
-  def rotate(isClockWise: Boolean): Unitt = {
+  /*def rotate(isClockWise: Boolean): Unitt = {
     Unitt(members.map(c => c.rotate(pivot, isClockWise)), pivot)
-  }
+  }*/
 
   // assumes offset coordinates
   def printMapTo(ps: PrintStream): Unit = {
@@ -56,7 +88,7 @@ case class Unitt(
   }
 }
 
-object UnittCompanion {
+object Unitt {
   def empty: Unitt = Unitt(Nil, Cell(-1000000000, -1000000000))
 }
 
@@ -68,4 +100,7 @@ case class Problem(
   filled: List[Cell],
   sourceLength: Int,
   sourceSeeds: List[Int]
-)
+) {
+  def toAxial = Problem(id, units.map(_.toAxial), width, height, filled.map(_.toAxial), sourceLength, sourceSeeds)
+  def toOffset = Problem(id, units.map(_.toOffset), width, height, filled.map(_.toOffset), sourceLength, sourceSeeds)
+}
