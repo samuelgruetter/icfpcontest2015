@@ -32,6 +32,10 @@ object Main {
       for (u <- problem.units) {
         u.printMapTo(System.out)
         println
+        u.toAxial.rotate(true).toOffset.printMapTo(System.out)
+        println
+        u.toAxial.rotate(false).toOffset.printMapTo(System.out)
+        println
       }
       println("Grid:")
       val grid = HexGrid(problem)
@@ -82,7 +86,8 @@ object Main {
   }
 
   def main(args: Array[String]): Unit = {
-    main1(args)
-    randomlyDown(16, 4)
+    //main1(args)
+    //randomlyDown(16, 4)
+    println(Cell(1, 0).rotate(Cell(0, 0), true))
   }
 }

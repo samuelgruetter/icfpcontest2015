@@ -17,28 +17,22 @@ case class Cell(
   // assumes axial coordinates
   def negative = Cell(-x, -y)
   
-  
   def allNeighbors(c: Cell): Iterable[Cell] = Directions.all.map(add(_))
   def forwardNeighbors(c: Cell): Iterable[Cell] = Directions.forward.map(add(_))
   def backwardNeighbors(c: Cell): Iterable[Cell] = Directions.backward.map(add(_))
   def downNeighbors(c: Cell): Iterable[Cell] = Directions.down.map(add(_))
   
-  /*def rotate(pivot: Cell, isClockWise: Boolean): Cell = {
-    val (newx, newy) = HexMath.rotate(x, y, pivot.x, pivot.y, isClockWise)
-    
-    val (ptx, pty, ptz) = toCube(pointX, pointY)
-    val (pvx, pvy, pvz) = toCube(pivotX, pivotY)
-    val (sx, sy, sz) = (ptx - pvx, pty - pvy, ptz - pvz) // shift so pivot is in the center
-    val (rx, ry, rz) = rotateCenter(sx, sy, sz, isClockWise)
-    fromCube(rx + pvx, ry + pvy, rz + pvz)
-    
-    def rotateCenter(x: Int, y: Int, z: Int, isClockWise: Boolean): (Int, Int, Int) = {
-    if (isClockWise) (-y, -z, -x)
-    else             (-z, -x, -y)
+  // assumes axial coordinates
+  def rotate(pivot: Cell, isClockWise: Boolean): Cell = {
+    // TODO: this code is wrong because it assumes the axial system from the website 
+    val z = -x - y
+    val pivotZ = -pivot.x - pivot.y
+    val (sx, sy, sz) = (x - pivot.x, y - pivot.y, z - pivotZ) // shift so pivot is in the center
+    val (rx, ry, rz) =
+      if (isClockWise) (-y, -z, -x)
+      else             (-z, -x, -y)
+    Cell(rx + pivot.x, ry + pivot.y)
   }
-    
-    Cell(newx, newy)
-  }*/
 }
 
 case class Unitt(
@@ -54,9 +48,9 @@ case class Unitt(
   def topmost: Int = members.minBy(_.y).y
   def bottommost: Int = members.maxBy(_.y).y
 
-  /*def rotate(isClockWise: Boolean): Unitt = {
+  def rotate(isClockWise: Boolean): Unitt = {
     Unitt(members.map(c => c.rotate(pivot, isClockWise)), pivot)
-  }*/
+  }
 
   // assumes offset coordinates
   def printMapTo(ps: PrintStream): Unit = {
