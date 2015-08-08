@@ -10,11 +10,13 @@ object Main2 {
   }
 
   def playAllProblems: Seq[Solution] = {
-    (0 to 23).flatMap(playOneProblem(_, randomlyDown))
+    (0 to 23).flatMap(problemId => {
+      val problem = JsonRead.problemFromFile(s"../probs/problem_$problemId.json")
+      playOneProblem(problem, randomlyDown)
+    })
   }
 
-  def playOneProblem(problemId: Int, mover: Mover): Seq[Solution] = {
-    val problem = JsonRead.problemFromFile(s"../probs/problem_$problemId.json")
+  def playOneProblem(problem: Problem, mover: Mover): Seq[Solution] = {
     for (seed <- problem.sourceSeeds) yield playOneSeed(problem, seed, mover)
   }
 

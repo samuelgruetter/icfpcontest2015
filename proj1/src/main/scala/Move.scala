@@ -18,6 +18,17 @@ trait Move {
   }
 }
 
+object Move {
+  def fromChar(c: Char): Move = c match {
+    case '3' => West
+    case '2' => East
+    case '4' => SouthWest
+    case '5' => SouthEast
+    case 'd' => RotateClockwise
+    case 'k' => RotateCounterclockwise
+  }
+}
+
 trait Rotation extends Move {
   def isClockwise: Boolean = this match {
     case RotateClockwise => true
