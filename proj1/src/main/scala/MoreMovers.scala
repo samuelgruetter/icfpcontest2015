@@ -80,7 +80,7 @@ object MoreMovers {
       }
     }
 
-    def betterThan(f1: Final, s1: State, f2: Final, s2: State): Boolean = {
+    def betterThan_2(f1: Final, s1: State, f2: Final, s2: State): Boolean = {
       if (f1.filledRows > f2.filledRows) {
         true
       } else if (f1.filledRows == f2.filledRows) {
@@ -89,6 +89,8 @@ object MoreMovers {
         false
       }
     }
+
+    def betterThan(f1: Final, s1: State, f2: Final, s2: State): Boolean = betterThan_2(f1, s1, f2, s2)
 
     var bestFinal: Final = null
     var bestState: State = null
@@ -120,6 +122,8 @@ object MoreMovers {
       Moves.forward.foreach(move => {
         val newPos = s.axial.add(move.direction)
         val newSt = StateCompanion(0, newPos)
+        // note: isOnField is too restrictive, because the center can be outside if it's empty,
+        // but then we can't save it in our search space array
         if (isOnField(newSt) && grid.canPlaceCurrentUnitAt(newPos)) {
           newState(move, newSt)
         }
