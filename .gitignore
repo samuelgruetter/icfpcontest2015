@@ -13,3 +13,4 @@ target/
 .project
 .settings
 
+proj1/credentials.sh
