@@ -10,7 +10,7 @@ object Main2 {
   }
 
   def playAllProblems: Seq[Solution] = {
-    (0 to 23).flatMap(problemId => {
+    (0 to 24).flatMap(problemId => {
       val problem = JsonRead.problemFromFile(s"../probs/problem_$problemId.json")
       playOneProblem(problem, randomlyDown)
     })

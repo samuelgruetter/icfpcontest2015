@@ -21,7 +21,7 @@ object Main {
   */
 
   def printAllProbs: Unit = {
-    for (i <- 0 to 23) {
+    for (i <- 0 to 24) {
       println("\n")
       println("-------------------------------------------------------------")
       val problem = JsonRead.problemFromFile(s"../probs/problem_$i.json")
@@ -86,8 +86,8 @@ object Main {
   }
 
   def main(args: Array[String]): Unit = {
-    //main1(args)
+    main1(args)
     //randomlyDown(16, 4)
-    println(Cell(1, 0).rotate(Cell(0, 0), true))
+    //println(Cell(1, 0).rotate(Cell(0, 0), true))
   }
 }
