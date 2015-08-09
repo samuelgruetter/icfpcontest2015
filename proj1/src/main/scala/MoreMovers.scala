@@ -64,7 +64,7 @@ object MoreMovers {
       }
     }
 
-    def betterThan(f1: Final, s1: State, f2: Final, s2: State): Boolean = {
+    def betterThan_1(f1: Final, s1: State, f2: Final, s2: State): Boolean = {
       if (f1.emptyWords < f2.emptyWords) {
         true
       } else if (f1.emptyWords == f2.emptyWords) {
@@ -80,6 +80,16 @@ object MoreMovers {
       }
     }
 
+    def betterThan(f1: Final, s1: State, f2: Final, s2: State): Boolean = {
+      if (f1.filledRows > f2.filledRows) {
+        true
+      } else if (f1.filledRows == f2.filledRows) {
+        betterThan_1(f1, s1, f2, s2)
+      } else {
+        false
+      }
+    }
+
     var bestFinal: Final = null
     var bestState: State = null
 
@@ -87,7 +97,7 @@ object MoreMovers {
       if (get(s) == Unreachable) {
         if (isFinal(s)) {
           val f = Final(lastMove,
-            77777, // grid.numberOfClearedLinesIfUnitLockedAt(s.axial),
+            grid.numberOfClearedLinesIfUnitLockedAt(s.axial),
             grid.countEmptyRegionsIfUnitLockedAt(s.axial)
           )
           set(s, f)
