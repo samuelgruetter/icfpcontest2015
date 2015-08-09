@@ -15,5 +15,5 @@ curl --user :$API_TOKEN -X POST -H "Content-Type: application/json" \
         -d @solution \
         https://davar.icfpcontest.org/teams/$TEAM_ID/solutions
 echo
-echo "- done"
-
+echo -n "- done: "
+date --utc
