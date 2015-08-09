@@ -47,19 +47,22 @@ class Win1 extends JFrame {
     val grid = HexGrid(sol.problem)
     val cmds = commands.split("\n")
     val units = RandomStream(sol.solution.seed).take(sol.problem.sourceLength)
-      .map(rand => sol.problem.units(rand % sol.problem.units.length))
+      .map(rand => sol.problem.units(rand % sol.problem.units.length)).toList
 
-    for ((cmd, unit) <- cmds zip units) {
-      grid.spawnUnit(unit)
+    grid.spawnUnit(units.head)
+
+    for (i <- 0 until cmds.length) {
+      val cmd = cmds(i)
+
       for (moveChar <- cmd) {
         val step = Move.fromChar(moveChar).asInstanceOf[Step]
         if (step.locks) {
           grid.lockUnit()
+          if (i+1 < units.length) grid.spawnUnit(units(i+1))
         } else {
           grid.move(step.direction)
         }
       }
-
     }
 
     textArea.setText(Util.printToString(ps => grid.printTo(ps)))
