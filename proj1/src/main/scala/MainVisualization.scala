@@ -8,9 +8,17 @@ import javax.swing.event.{CaretEvent, CaretListener}
 import Movers._
 
 class Win1 extends JFrame {
-  val solutions = getSolutions
+  var solutions: Seq[VisualizableSolution] = null
+  var calcTime: Long = -1
 
   def getSolutions: Seq[VisualizableSolution] = {
+    val t0 = System.currentTimeMillis
+    val res = getSolutionsRaw
+    calcTime = System.currentTimeMillis - t0
+    res
+  }
+
+  def getSolutionsRaw: Seq[VisualizableSolution] = {
     (0 to 23).flatMap(problemId => {
       val problem = JsonRead.problemFromFile(s"../probs/problem_$problemId.json")
       Main2.playOneProblem(problem, theMoverOfChoice).map(sol => new VisualizableSolution(problem, sol))
@@ -31,7 +39,10 @@ class Win1 extends JFrame {
   def run: Unit = {
     initLayout
 
+    solutions = getSolutions
     println(JsonWrite.solutionsToJsonString(solutions.map(_.solution)))
+    //println(HexGrid.clearedLinesStats)
+    println(s"Computing the solutions took ${calcTime}ms")
 
     for (sol <- solutions) cb.addItem(sol2StrId(sol))
 

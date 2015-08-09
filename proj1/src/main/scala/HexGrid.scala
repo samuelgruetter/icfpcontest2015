@@ -1,4 +1,5 @@
 import java.io.PrintStream
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import java.lang.IndexOutOfBoundsException
 
@@ -31,6 +32,14 @@ object HexGrid {
     for (pos <- prob.filled.map(_.toAxial)) g.setCell(pos, FullCell)
     g
   }
+
+  /*
+  val clearedLinesStats: mutable.Map[Int, Int] = mutable.Map()
+  def clearedLinesHook(nClearedLines: Int): Unit = {
+    val old = clearedLinesStats.getOrElse(nClearedLines, 0)
+    clearedLinesStats.put(nClearedLines, old+1)
+  }
+  */
 }
 
 class HexGrid(val width: Int, val height: Int) {
@@ -81,9 +90,11 @@ class HexGrid(val width: Int, val height: Int) {
     // val map2 = unit.members.groupBy(mem => cell(p.add(mem)))
     // if (map2.isDefinedAt(FullCell)) throw new IllegalArgumentException("cannot lock unit at " + p)
 
-    unit.members.map(mem => p.add(mem)).groupBy(_.y).count {
+    val res = unit.members.map(mem => p.add(mem)).groupBy(_.y).count {
       case (y, newlyFilledCells) => newlyFilledCells.length + countFullCellsOfRow(y) == width
     }
+    //HexGrid.clearedLinesHook(res)
+    res
   }
 
   def canMove(dir: Cell): Boolean = {
