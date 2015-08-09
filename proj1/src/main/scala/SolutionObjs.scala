@@ -11,7 +11,9 @@ case class Solution(problemId: Int, seed: Int, solution: String)
 
 object SolutionCompanion {
 
-  def apply(problemId: Int, seed: Int, commands: Seq[Move]): Solution = {
-    Solution(problemId, seed, commands.toIterator.map(_.toChar).mkString)
+  def apply(problemId: Int, seed: Int, commands: Seq[Seq[Move]]): Solution = {
+    // one line per unit
+    val s = commands.toIterator.map(cs => cs.toIterator.map(_.toChar).mkString).mkString("\n")
+    Solution(problemId, seed, s)
   }
 }

@@ -26,13 +26,13 @@ object Main2 {
     val units = RandomStream(seed).take(problem.sourceLength)
       .map(rand => problem.units(rand % problem.units.length))
 
-    val commands = ListBuffer[Move]()
+    val commands = ListBuffer[Seq[Move]]()
     var stuck = false
     var remainingUnits = units
     while (!stuck && remainingUnits.nonEmpty) {
       playOneUnit(grid, remainingUnits.head, mover) match {
         case Some(moreCommands) =>
-          commands ++= moreCommands
+          commands += moreCommands
           remainingUnits = remainingUnits.tail
         case None => stuck = true
       }
