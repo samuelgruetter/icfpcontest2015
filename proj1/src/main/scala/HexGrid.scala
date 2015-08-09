@@ -95,6 +95,19 @@ class HexGrid(val width: Int, val height: Int) {
   def lockUnit(): Unit = {
     unit.members.foreach(c => setCell(c.add(unitCenter), FullCell))
     unit = Unitt.empty
+    removeFullLines()
+  }
+
+  def removeFullLines(): Unit = {
+    for (y <- 0 until height) {
+      if ((0 until width).forall(x => grid(x)(y) == FullCell)) {
+        for (y2 <- y to 0 by -1) {
+          for (x2 <- 0 until width) {
+            grid(x2)(y2) = if (y2 == 0) EmptyCell else grid(x2)(y2 - 1)
+          }
+        }
+      }
+    }
   }
 
   def printTo(ps: PrintStream): Unit = {
