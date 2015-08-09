@@ -41,7 +41,8 @@ class Win1 extends JFrame {
     //showStep(solutions.head, "")
   }
 
-  /** commands must have newlines between units */
+  /** commands must have newlines between units,
+    *  and Lock commands must be used to lock, not normal step commands */
   def showStep(sol: VisualizableSolution, commands: String): Unit = {
     val grid = HexGrid(sol.problem)
     val cmds = commands.split("\n")
@@ -50,11 +51,15 @@ class Win1 extends JFrame {
 
     for ((cmd, unit) <- cmds zip units) {
       grid.spawnUnit(unit)
-      for (moveChar <- cmd.drop(1)) { // drop lock move, newline already dropped by split
+      for (moveChar <- cmd) {
         val step = Move.fromChar(moveChar).asInstanceOf[Step]
-        grid.move(step.direction)
+        if (step.locks) {
+          grid.lockUnit()
+        } else {
+          grid.move(step.direction)
+        }
       }
-      grid.lockUnit()
+
     }
 
     textArea.setText(Util.printToString(ps => grid.printTo(ps)))

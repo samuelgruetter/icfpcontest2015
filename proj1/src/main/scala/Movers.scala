@@ -14,7 +14,7 @@ object Movers {
       val moves: List[Step] = if (rand.nextBoolean()) List(SouthWest, SouthEast) else List(SouthEast, SouthWest)
       val possibleMoves = moves.filter(step => grid.canMove(step.direction))
       if (possibleMoves.isEmpty) {
-        trace = SouthWest :: trace // make a move to lock
+        trace = LockSouthWest :: trace // make a move to lock
         grid.lockUnit()
         locked = true
       } else {

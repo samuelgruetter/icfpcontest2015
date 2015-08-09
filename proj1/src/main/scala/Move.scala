@@ -15,6 +15,10 @@ trait Move {
     case SouthEast => '5'
     case RotateClockwise => 'd'
     case RotateCounterclockwise => 'k'
+    case LockWest => 'p'
+    case LockEast => 'b'
+    case LockSouthWest => 'a'
+    case LockSouthEast => 'l'
   }
 }
 
@@ -26,6 +30,10 @@ object Move {
     case '5' => SouthEast
     case 'd' => RotateClockwise
     case 'k' => RotateCounterclockwise
+    case 'p' => LockWest
+    case 'b' => LockEast
+    case 'a' => LockSouthWest
+    case 'l' => LockSouthEast
   }
 }
 
@@ -36,17 +44,22 @@ trait Rotation extends Move {
   }
 }
 
-class Step(val direction: Cell) extends Move
+class Step(val direction: Cell, val locks: Boolean) extends Move
 
 case object RotateClockwise extends Rotation
 case object RotateCounterclockwise extends Rotation
 
-case object West extends Step(Cell(-1, 0))
-case object East extends Step(Cell( 1, 0))
-case object SouthWest extends Step(Cell( 0,  1))
-case object SouthEast extends Step(Cell( 1,  1))
-case object NorthWest extends Step(Cell(-1, -1))
-case object NorthEast extends Step(Cell( 0, -1))
+case object West extends Step(Cell(-1, 0), false)
+case object East extends Step(Cell( 1, 0), false)
+case object SouthWest extends Step(Cell( 0,  1), false)
+case object SouthEast extends Step(Cell( 1,  1), false)
+case object NorthWest extends Step(Cell(-1, -1), false)
+case object NorthEast extends Step(Cell( 0, -1), false)
+
+case object LockWest extends Step(Cell(-1, 0), true)
+case object LockEast extends Step(Cell( 1, 0), true)
+case object LockSouthWest extends Step(Cell( 0,  1), true)
+case object LockSouthEast extends Step(Cell( 1,  1), true)
 
 object Moves {
   val all = Iterable(West, East, SouthWest, SouthEast, NorthWest, NorthEast)
