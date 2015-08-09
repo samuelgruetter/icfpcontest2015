@@ -1,3 +1,4 @@
+import java.io.PrintStream
 import java.util.Scanner
 import scala.util.Random
 
@@ -20,26 +21,30 @@ object Main {
   }
   */
 
+  def printOneProblem(problem: Problem, ps: PrintStream): Unit = {
+    ps.println(s"Problem ${problem.id} (${problem.width} x ${problem.height}):")
+    ps.println(s"Source length: ${problem.sourceLength}")
+    ps.println(s"Source seeds: ${problem.sourceSeeds.mkString(", ")}")
+    ps.println(s"${problem.units.length} units:\n")
+    for (u <- problem.units) {
+      u.printMapTo(ps)
+      ps.println
+      u.toAxial.rotate(true).toOffset.printMapTo(ps)
+      ps.println
+      u.toAxial.rotate(false).toOffset.printMapTo(ps)
+      ps.println
+    }
+    ps.println("Grid:")
+    val grid = HexGrid(problem)
+    grid.printTo(ps)
+  }
+
   def printAllProbs: Unit = {
     for (i <- 0 to 24) {
       println("\n")
       println("-------------------------------------------------------------")
       val problem = JsonRead.problemFromFile(s"../probs/problem_$i.json")
-      println(s"Problem $i (${problem.width} x ${problem.height}):")
-      println(s"Source length: ${problem.sourceLength}")
-      println(s"Source seeds: ${problem.sourceSeeds.mkString(", ")}")
-      println(s"${problem.units.length} units:\n")
-      for (u <- problem.units) {
-        u.printMapTo(System.out)
-        println
-        u.toAxial.rotate(true).toOffset.printMapTo(System.out)
-        println
-        u.toAxial.rotate(false).toOffset.printMapTo(System.out)
-        println
-      }
-      println("Grid:")
-      val grid = HexGrid(problem)
-      grid.printTo(System.out)
+      printOneProblem(problem, System.out)
     }
     println
   }
@@ -87,7 +92,7 @@ object Main {
 
   def main(args: Array[String]): Unit = {
     main1(args)
-    //randomlyDown(16, 4)
+    randomlyDown(16, 4)
     //println(Cell(1, 0).rotate(Cell(0, 0), true))
   }
 }
