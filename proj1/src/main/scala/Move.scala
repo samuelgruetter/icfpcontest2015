@@ -60,10 +60,13 @@ case object LockWest extends Step(Cell(-1, 0), true)
 case object LockEast extends Step(Cell( 1, 0), true)
 case object LockSouthWest extends Step(Cell( 0,  1), true)
 case object LockSouthEast extends Step(Cell( 1,  1), true)
+case object LockNorthWest extends Step(Cell(-1, -1), true)
+case object LockNorthEast extends Step(Cell(-1, -1), true)
 
 object Moves {
   val all = Iterable(West, East, SouthWest, SouthEast, NorthWest, NorthEast)
   val forward = Iterable(West, East, SouthWest, SouthEast)
+  val forwardLocking = Iterable(LockWest, LockEast, LockSouthWest, LockSouthEast)
   val backward = Iterable(West, East, NorthWest, NorthEast)
   val down = Iterable(SouthWest, SouthEast)
 }

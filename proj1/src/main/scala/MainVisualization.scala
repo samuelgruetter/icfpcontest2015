@@ -13,7 +13,7 @@ class Win1 extends JFrame {
   def getSolutions: Seq[VisualizableSolution] = {
     (0 to 23).flatMap(problemId => {
       val problem = JsonRead.problemFromFile(s"../probs/problem_$problemId.json")
-      Main2.playOneProblem(problem, randomlyDown).map(sol => new VisualizableSolution(problem, sol))
+      Main2.playOneProblem(problem, betterThanRandomlyDown).map(sol => new VisualizableSolution(problem, sol))
     })
   }
 
@@ -157,5 +157,3 @@ object MainVisualization {
     })
   }
 }
-
-
