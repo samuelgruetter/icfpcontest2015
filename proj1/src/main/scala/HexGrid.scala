@@ -126,6 +126,7 @@ class HexGrid(val width: Int, val height: Int) {
     unit.members.contains(pos.add(unitCenter.negative))
   }
 
+  // assumes axial coordinates
   def cellToChar(pos: Cell): Char = {
     if (pos == currentUnitPivot) {
       if (isCoveredByUnit(pos)) 'P' else 'p'
