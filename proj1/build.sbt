@@ -1,3 +1,6 @@
+
+import com.typesafe.sbt.SbtStartScript
+
 name := "proj1"
 
 version := "1.0"
@@ -10,5 +13,4 @@ libraryDependencies += "io.spray" %%  "spray-json" % "1.3.2"
 
 scalacOptions ++= Seq("-deprecation", "-feature")
 
-import com.typesafe.sbt.SbtStartScript
 seq(SbtStartScript.startScriptForClassesSettings: _*)
