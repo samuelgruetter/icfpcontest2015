@@ -79,7 +79,7 @@ object Main {
         println("locked")
         locked = true
       } else {
-        grid.move(possibleMoves.head)
+        grid.step(possibleMoves.head)
       }
     }
   }

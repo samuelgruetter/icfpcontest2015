@@ -75,11 +75,29 @@ class HexGrid(val width: Int, val height: Int) {
     unit.members.forall(c => isCellEmpty(p0.add(c)))
   }
 
+  def countFullCellsOfRow(y: Int): Int = (0 until width).count(x => grid(x)(y) == FullCell)
+
+  def numberOfClearedLinesIfUnitLockedAt(p: Cell): Int = {
+    // val map2 = unit.members.groupBy(mem => cell(p.add(mem)))
+    // if (map2.isDefinedAt(FullCell)) throw new IllegalArgumentException("cannot lock unit at " + p)
+
+    unit.members.map(mem => p.add(mem)).groupBy(_.y).count {
+      case (y, newlyFilledCells) => newlyFilledCells.length + countFullCellsOfRow(y) == width
+    }
+  }
+
   def canMove(dir: Cell): Boolean = {
     canPlaceCurrentUnitAt(unitCenter.add(dir))
   }
 
-  def move(dir: Cell): Unit = {
+  def applyMove(move: Move): Unit = {
+    move match {
+      case _: Rotation => throw new UnsupportedOperationException // TODO
+      case s: Step => if (s.locks) lockUnit() else step(s.direction)
+    }
+  }
+
+  def step(dir: Cell): Unit = {
     unitCenter = unitCenter.add(dir)
   }
 

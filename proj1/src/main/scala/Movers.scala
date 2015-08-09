@@ -6,6 +6,8 @@ object Movers {
   /** Gets a grid with a unit placed at the top, has to produce sequence of moves, including the move that locks the unit */
   type Mover = HexGrid => Seq[Move]
 
+  val theMoverOfChoice: Mover = MoreMovers.stateSpaceExplorer
+
   def betterThanRandomlyDown(grid: HexGrid): Seq[Move] = {
     case class SearchPosition(pos: Cell, prev: Option[SearchPosition], prevMove: Option[Move])
 
@@ -38,7 +40,7 @@ object Movers {
     val best = possibleFinalPositions.maxBy(p => score(p.pos))
     val lockMove = Moves.forwardLocking.find(step => !grid.canPlaceCurrentUnitAt(best.pos.add(step.direction))).get
     val moves = getMoves(best)
-    moves.foreach(move => grid.move(move.asInstanceOf[Step].direction))
+    moves.foreach(move => grid.step(move.asInstanceOf[Step].direction))
     grid.lockUnit()
     moves :+ lockMove
   }
@@ -56,7 +58,7 @@ object Movers {
         locked = true
       } else {
         val m = possibleMoves.head
-        grid.move(m.direction)
+        grid.step(m.direction)
         trace = m :: trace
       }
     }
