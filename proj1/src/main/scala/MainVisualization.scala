@@ -1,6 +1,6 @@
 
 import java.awt.event.{ActionEvent, ActionListener}
-import java.awt.{Frame, Font, BorderLayout}
+import java.awt.{GridLayout, Frame, Font, BorderLayout}
 import java.io.{PrintStream, ByteArrayOutputStream}
 import javax.swing._
 import javax.swing.event.{CaretEvent, CaretListener}
@@ -35,8 +35,10 @@ class Win1 extends JFrame {
 
     for (sol <- solutions) cb.addItem(sol2StrId(sol))
 
-    commandsField.setText(currentSol.solution.solution)
-    showStep(solutions.head, "")
+    cb.setSelectedIndex(0)
+
+    //commandsField.setText(currentSol.solution.solution)
+    //showStep(solutions.head, "")
   }
 
   /** commands must have newlines between units */
@@ -54,23 +56,19 @@ class Win1 extends JFrame {
       }
       grid.lockUnit()
     }
-    val baos = new ByteArrayOutputStream()
-    val ps = new PrintStream(baos)
 
-    grid.printTo(ps)
-
-    val content = baos.toString("ISO-8859-1")
-    textArea.setText(content)
+    textArea.setText(Util.printToString(ps => grid.printTo(ps)))
   }
 
   var cb: JComboBox[String] = null
   var textArea: JTextArea = null
+  var problemSummary: JTextArea = null
   var commandsField: JTextArea = null
   var posLabel: JLabel = null
 
   def initLayout: Unit = {
     setSize(800, 600)
-    val font = new Font("monospaced", Font.PLAIN, 36)
+    val font = new Font("monospaced", Font.PLAIN, 24)
 
     cb = new JComboBox[String]()
     //val sl = new JSlider()
@@ -105,10 +103,16 @@ class Win1 extends JFrame {
     nav.add(commandsBorder, BorderLayout.CENTER)
     nav.add(posLabel, BorderLayout.EAST)
 
+    problemSummary = new JTextArea()
+    problemSummary.setFont(font)
+    problemSummary.setText("description of problem")
+
     cb.setFont(font)
     cb.addActionListener(new ActionListener {
       override def actionPerformed(actionEvent: ActionEvent): Unit = {
-        //Win1.this.setTitle(Win1.this.getTitle + "hi")
+        problemSummary.setText(Util.printToString(ps => Main.printOneProblem(currentSol.problem, ps)))
+        problemSummary.setCaretPosition(0)
+
         commandsField.setText(currentSol.solution.solution)
         commandsField.setCaretPosition(0)
         commandsField.requestFocus()
@@ -121,7 +125,11 @@ class Win1 extends JFrame {
 
     setLayout(new BorderLayout)
     add(nav, BorderLayout.PAGE_START)
-    add(textArea, BorderLayout.CENTER)
+    val borderFor2Areas = new JPanel()
+    borderFor2Areas.setLayout(new GridLayout(1, 2))
+    borderFor2Areas.add(new JScrollPane(textArea))
+    borderFor2Areas.add(new JScrollPane(problemSummary))
+    add(borderFor2Areas, BorderLayout.CENTER)
 
     setExtendedState(getExtendedState() | Frame.MAXIMIZED_BOTH)
 
