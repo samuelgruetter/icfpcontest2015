@@ -59,7 +59,7 @@ class HexGrid(val width: Int, val height: Int) {
   def placeUnitAt(u: Unitt, x0: Int, y0: Int): Unit = {
     for (Cell(x, y) <- u.members) setCell(x0 + x, y0 + y, UnitCell)
   }*/
-  
+
   /** returns false for cells outside grid */
   def isCellEmpty(pos: Cell): Boolean = {
     val offset = pos.toOffset
@@ -87,9 +87,14 @@ class HexGrid(val width: Int, val height: Int) {
     val xCenterAbs = xLeftAbs - xLeftRel
 
     val yCenterAbs = -u.topmost
-    
+
     unitCenter = Cell(xCenterAbs, yCenterAbs).toAxial
     unit = u.toAxial
+  }
+
+  def lockUnit(): Unit = {
+    unit.members.foreach(c => setCell(c.add(unitCenter), FullCell))
+    unit = Unitt.empty
   }
 
   def printTo(ps: PrintStream): Unit = {

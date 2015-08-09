@@ -15,6 +15,7 @@ object Movers {
       val possibleMoves = moves.filter(step => grid.canMove(step.direction))
       if (possibleMoves.isEmpty) {
         trace = SouthWest :: trace // make a move to lock
+        grid.lockUnit()
         locked = true
       } else {
         val m = possibleMoves.head
