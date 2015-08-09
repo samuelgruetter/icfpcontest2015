@@ -48,10 +48,26 @@ object MoreMovers {
       getLockMove(s).isDefined
     }
 
-    def betterThan(f1: Final, s1: State, f2: Final, s2: State): Boolean = {
+    def betterThan_0(f1: Final, s1: State, f2: Final, s2: State): Boolean = {
       if (f1.filledRows > f2.filledRows) {
         true
       } else if (f1.filledRows == f2.filledRows) {
+        if (s1.yOffset > s2.yOffset) {
+          true
+        } else if (s1.yOffset == s2.yOffset) {
+          s1.xOffset > s2.xOffset
+        } else {
+          false
+        }
+      } else {
+        false
+      }
+    }
+
+    def betterThan(f1: Final, s1: State, f2: Final, s2: State): Boolean = {
+      if (f1.emptyWords < f2.emptyWords) {
+        true
+      } else if (f1.emptyWords == f2.emptyWords) {
         if (s1.yOffset > s2.yOffset) {
           true
         } else if (s1.yOffset == s2.yOffset) {
@@ -70,7 +86,10 @@ object MoreMovers {
     def newState(lastMove: Step, s: State): Unit = {
       if (get(s) == Unreachable) {
         if (isFinal(s)) {
-          val f = Final(lastMove, grid.numberOfClearedLinesIfUnitLockedAt(s.axial), 77777)
+          val f = Final(lastMove,
+            77777, // grid.numberOfClearedLinesIfUnitLockedAt(s.axial),
+            grid.countEmptyRegionsIfUnitLockedAt(s.axial)
+          )
           set(s, f)
           if (bestFinal == null || betterThan(f, s, bestFinal, bestState)) {
             bestFinal = f

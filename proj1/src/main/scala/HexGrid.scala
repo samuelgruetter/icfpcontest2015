@@ -80,9 +80,16 @@ class HexGrid(val width: Int, val height: Int) {
     offset.x >= 0 && offset.x < width && offset.y >= 0 && offset.y < height && cell(pos) == EmptyCell
   }
 
+
+  def isReallyEmpty(xOffset: Int, yOffset: Int): Boolean = {
+    grid(xOffset)(yOffset) == EmptyCell && !isCoveredByUnit(Cell(xOffset, yOffset).toAxial)
+  }
+
   def canPlaceCurrentUnitAt(p0: Cell): Boolean = {
     unit.members.forall(c => isCellEmpty(p0.add(c)))
   }
+
+  //def row(y: Int): Iterable[GridCell] = Iterable.range(0, width).map(x => grid(x)(y))
 
   def countFullCellsOfRow(y: Int): Int = (0 until width).count(x => grid(x)(y) == FullCell)
 
@@ -94,6 +101,25 @@ class HexGrid(val width: Int, val height: Int) {
       case (y, newlyFilledCells) => newlyFilledCells.length + countFullCellsOfRow(y) == width
     }
     //HexGrid.clearedLinesHook(res)
+    res
+  }
+
+  def countEmptyRegionsOfRow(y: Int): Int = {
+    var lastFull: Boolean = true
+    var count = 0
+    for (x <- 0 until width) {
+      val currentEmpty = isReallyEmpty(x, y)
+      if (lastFull && currentEmpty) count += 1
+      lastFull = !currentEmpty
+    }
+    count
+  }
+
+  def countEmptyRegionsIfUnitLockedAt(p: Cell): Int = {
+    val savedCenter = unitCenter
+    unitCenter = p
+    val res = Iterable.range(0, height).map(countEmptyRegionsOfRow).sum
+    unitCenter = savedCenter
     res
   }
 
