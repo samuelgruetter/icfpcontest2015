@@ -61,7 +61,7 @@ object Main {
     grid.spawnUnit(problem.units(unitId))
 
     val rd = new Scanner(System.in)
-    val rand = new Random()
+    val rand = new Random(123456789)
     var locked = false
     while (!locked) {
       grid.printTo(System.out)

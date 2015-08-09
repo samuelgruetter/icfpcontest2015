@@ -7,7 +7,7 @@ object Movers {
   type Mover = HexGrid => Seq[Move]
 
   def randomlyDown(grid: HexGrid): Seq[Move] = {
-    val rand = new Random()
+    val rand = new Random(123456789)
     var locked = false
     var trace: List[Move] = Nil
     while (!locked) {
