@@ -22,7 +22,11 @@ object Movers {
       }
       rec(start)
     }
-    def score(pos: Cell) = (pos.y, -pos.x)
+    def score(pos: Cell) = {
+      //val numFullNeighbors = grid.unit.members.flatMap(_.add(pos).downNeighbors).distinct.map(grid.cell).count(_ == FullCell)
+      //(pos.y, numFullNeighbors, -pos.x)
+      (pos.y, -pos.x)
+    }
     def getMoves(searchPos: SearchPosition): Seq[Move] = searchPos.prev match {
       case Some(prev) => getMoves(prev) :+ searchPos.prevMove.get
       case None => Seq()

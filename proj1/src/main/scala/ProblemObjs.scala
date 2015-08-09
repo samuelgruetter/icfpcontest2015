@@ -17,10 +17,10 @@ case class Cell(
   // assumes axial coordinates
   def negative = Cell(-x, -y)
 
-  def allNeighbors(c: Cell): Iterable[Cell] = Directions.all.map(add(_))
-  def forwardNeighbors(c: Cell): Iterable[Cell] = Directions.forward.map(add(_))
-  def backwardNeighbors(c: Cell): Iterable[Cell] = Directions.backward.map(add(_))
-  def downNeighbors(c: Cell): Iterable[Cell] = Directions.down.map(add(_))
+  def allNeighbors: Iterable[Cell] = Directions.all.map(add(_))
+  def forwardNeighbors: Iterable[Cell] = Directions.forward.map(add(_))
+  def backwardNeighbors: Iterable[Cell] = Directions.backward.map(add(_))
+  def downNeighbors: Iterable[Cell] = Directions.down.map(add(_))
 
   // assumes axial coordinates
   def rotate(pivot: Cell, isClockWise: Boolean): Cell = {

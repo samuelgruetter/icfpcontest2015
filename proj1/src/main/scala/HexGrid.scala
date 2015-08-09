@@ -1,5 +1,6 @@
 import java.io.PrintStream
 import scala.collection.mutable.ArrayBuffer
+import java.lang.IndexOutOfBoundsException
 
 
 sealed abstract class GridCell {
@@ -40,7 +41,11 @@ class HexGrid(val width: Int, val height: Int) {
   // get and set cells in axial coordinates
   def cell(pos: Cell): GridCell = {
     val offset = pos.toOffset
-    grid(offset.x)(offset.y)
+    try {
+      grid(offset.x)(offset.y)
+    } catch {
+      case _: IndexOutOfBoundsException => FullCell
+    }
   }
   def setCell(pos: Cell, c: GridCell): Unit = {
     val offset = pos.toOffset
