@@ -21,6 +21,8 @@ object Main2 {
   }
 
   def playOneSeed(problem: Problem, seed: Int, mover: Mover): Solution = {
+    println(s"Playing problem ${problem.id}, seed $seed")
+
     val grid = HexGrid(problem)
 
     val units = RandomStream(seed).take(problem.sourceLength)

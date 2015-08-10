@@ -19,7 +19,7 @@ class Win1 extends JFrame {
   }
 
   def getSolutionsRaw: Seq[VisualizableSolution] = {
-    (0 to 23).flatMap(problemId => {
+    (16 to 16).flatMap(problemId => {
       val problem = JsonRead.problemFromFile(s"../probs/problem_$problemId.json")
       Main2.playOneProblem(problem, theMoverOfChoice).map(sol => new VisualizableSolution(problem, sol))
     })

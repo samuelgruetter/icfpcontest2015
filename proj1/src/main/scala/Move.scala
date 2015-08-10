@@ -20,6 +20,8 @@ trait Move {
     case LockSouthWest => 'a'
     case LockSouthEast => 'l'
   }
+
+  def undo: Move
 }
 
 object Move {
@@ -44,28 +46,49 @@ trait Rotation extends Move {
   }
 }
 
-class Step(val direction: Cell, val locks: Boolean) extends Move
+abstract class Step(val direction: Cell, val locks: Boolean) extends Move
+abstract class NormalStep(direction: Cell) extends Step(direction, false)
+abstract class LockStep(direction: Cell) extends Step(direction, true) {
+  def undo = throw new UnsupportedOperationException
+}
 
-case object RotateClockwise extends Rotation
-case object RotateCounterclockwise extends Rotation
+case object RotateClockwise extends Rotation {
+  def undo = RotateCounterclockwise
+}
+case object RotateCounterclockwise extends Rotation {
+  def undo = RotateClockwise
+}
 
-case object West extends Step(Cell(-1, 0), false)
-case object East extends Step(Cell( 1, 0), false)
-case object SouthWest extends Step(Cell( 0,  1), false)
-case object SouthEast extends Step(Cell( 1,  1), false)
-case object NorthWest extends Step(Cell(-1, -1), false)
-case object NorthEast extends Step(Cell( 0, -1), false)
+case object West extends NormalStep(Cell(-1, 0)) {
+  def undo = East
+}
+case object East extends NormalStep(Cell( 1, 0)) {
+  def undo = West
+}
+case object SouthWest extends NormalStep(Cell( 0,  1)) {
+  def undo = NorthEast
+}
+case object SouthEast extends NormalStep(Cell( 1,  1)) {
+  def undo = NorthWest
+}
+case object NorthWest extends NormalStep(Cell(-1, -1)) {
+  def undo = SouthEast
+}
+case object NorthEast extends NormalStep(Cell( 0, -1)) {
+  def undo = SouthWest
+}
 
-case object LockWest extends Step(Cell(-1, 0), true)
-case object LockEast extends Step(Cell( 1, 0), true)
-case object LockSouthWest extends Step(Cell( 0,  1), true)
-case object LockSouthEast extends Step(Cell( 1,  1), true)
-case object LockNorthWest extends Step(Cell(-1, -1), true)
-case object LockNorthEast extends Step(Cell(-1, -1), true)
+case object LockWest extends LockStep(Cell(-1, 0))
+case object LockEast extends LockStep(Cell( 1, 0))
+case object LockSouthWest extends LockStep(Cell( 0,  1))
+case object LockSouthEast extends LockStep(Cell( 1,  1))
+case object LockNorthWest extends LockStep(Cell(-1, -1))
+case object LockNorthEast extends LockStep(Cell(-1, -1))
 
 object Moves {
   val all = Iterable(West, East, SouthWest, SouthEast, NorthWest, NorthEast)
   val forward = Iterable(West, East, SouthWest, SouthEast)
+  val forwardWithRotation = Iterable(RotateClockwise, RotateCounterclockwise, West, East, SouthWest, SouthEast)
   val forwardLocking = Iterable(LockWest, LockEast, LockSouthWest, LockSouthEast)
   val backward = Iterable(West, East, NorthWest, NorthEast)
   val down = Iterable(SouthWest, SouthEast)

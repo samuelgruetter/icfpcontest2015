@@ -1,4 +1,5 @@
 import java.io.PrintStream
+import java.util.Scanner
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import java.lang.IndexOutOfBoundsException
@@ -127,11 +128,30 @@ class HexGrid(val width: Int, val height: Int) {
     canPlaceCurrentUnitAt(unitCenter.add(dir))
   }
 
+  val rd = new Scanner(System.in)
+  var count = 0
+
   def applyMove(move: Move): Unit = {
+    /*
+    printTo(System.out)
+    count += 1
+    println()
+    println(s"$count $unitCenter $currentUnitPivot")
+    println()
+    //if (count > 64) rd.nextLine()
+    */
+
     move match {
-      case _: Rotation => throw new UnsupportedOperationException // TODO
+      case r: Rotation => rotate(r.isClockwise)
       case s: Step => if (s.locks) lockUnit() else step(s.direction)
     }
+  }
+
+  def rotate(isClockwise: Boolean): Unit = {
+    val oldUnitCenter = unitCenter
+    unitCenter = unitCenter.rotate(currentUnitPivot, isClockwise)
+    val centerMoved = unitCenter.add(oldUnitCenter.negative)
+    unit = unit.rotate(isClockwise).moveBy(centerMoved.negative)
   }
 
   def step(dir: Cell): Unit = {

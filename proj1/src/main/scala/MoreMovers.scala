@@ -1,3 +1,5 @@
+import java.util.Scanner
+
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
@@ -6,10 +8,10 @@ object MoreMovers {
     trait HowGood
     case object Unreachable extends HowGood
     trait Reachable extends HowGood {
-      def lastMove: Step
+      def lastMove: Move
     }
-    case class NonFinal(lastMove: Step) extends Reachable
-    case class Final(lastMove: Step, filledRows: Int, emptyWords: Int) extends Reachable
+    case class NonFinal(lastMove: Move) extends Reachable
+    case class Final(lastMove: Move, filledRows: Int, emptyWords: Int) extends Reachable
 
     // space(rotation)(xOffset)(yOffset)
     val space: ArrayBuffer[ArrayBuffer[ArrayBuffer[HowGood]]] =
@@ -95,7 +97,7 @@ object MoreMovers {
     var bestFinal: Final = null
     var bestState: State = null
 
-    def newState(lastMove: Step, s: State): Unit = {
+    def newState(lastMove: Move, s: State): Unit = {
       if (get(s) == Unreachable) {
         if (isFinal(s)) {
           val f = Final(lastMove,
@@ -116,29 +118,80 @@ object MoreMovers {
 
     newState(null, startState)
 
+    def setGridState(s: State): Unit = {
+      for (i <- 0 until s.rotation) grid.rotate(isClockwise = true)
+      grid.unitCenter = s.axial
+    }
+
+    val rd = new Scanner(System.in)
+
     while (q.nonEmpty) {
+      //Console.err.println("Queue length: " + q.size)
+
       val s = q.dequeue()
 
-      Moves.forward.foreach(move => {
-        val newPos = s.axial.add(move.direction)
-        val newSt = StateCompanion(0, newPos)
+      Moves.forwardWithRotation.foreach(move => {
+        val savedGridUnit = grid.unit
+
+        val (newRot, newPos) = move match {
+          case r: Rotation =>
+            val absPivot = s.axial.add(grid.unit.pivot)
+            val oldPos = s.axial
+            val newPos = oldPos.rotate(absPivot, r.isClockwise)
+            val centerMoved = newPos.add(oldPos.negative)
+            grid.unit = grid.unit.rotate(r.isClockwise).moveBy(centerMoved.negative)
+            val newRot = if (r.isClockwise) (s.rotation + 1) % 6 else (s.rotation + 5) % 6
+            (newRot, newPos)
+          case step: Step =>
+            val newPos = s.axial.add(step.direction)
+            (s.rotation, newPos)
+        }
+        val newSt = StateCompanion(newRot, newPos)
+
         // note: isOnField is too restrictive, because the center can be outside if it's empty,
         // but then we can't save it in our search space array
         if (isOnField(newSt) && grid.canPlaceCurrentUnitAt(newPos)) {
           newState(move, newSt)
         }
+
+        grid.unit = savedGridUnit
       })
     }
 
     var res: List[Move] = List(getLockMove(bestState).get)
-    var currentState = bestState
-    while (get(currentState).asInstanceOf[Reachable].lastMove != null) {
-      val forwardMove = get(currentState).asInstanceOf[Reachable].lastMove
-      res = forwardMove :: res
-      val stepBack = forwardMove.direction.negative
-      val prevPos = currentState.axial.add(stepBack)
-      currentState = StateCompanion(0, prevPos)
+
+    val savedUnit = grid.unit
+    val savedCenter = grid.unitCenter
+
+    setGridState(bestState)
+    var currentRot = bestState.rotation
+
+    def currentLastMove: Move = {
+      get(StateCompanion(currentRot, grid.unitCenter)).asInstanceOf[Reachable].lastMove
     }
+
+    while (currentLastMove != null) {
+      //Console.err.println("Current res length: " + res.length)
+      grid.printTo(System.out)
+      println
+      println("going to undo " + currentLastMove)
+      println
+      //rd.nextLine()
+
+      res = currentLastMove :: res
+      currentLastMove.undo match {
+        case r: Rotation =>
+          grid.rotate(r.isClockwise)
+          currentRot = if (r.isClockwise) (currentRot + 1) % 6 else (currentRot + 5) % 6
+          // println("stop")
+          // rd.nextLine()
+        case stepBack: Step =>
+          grid.unitCenter = grid.unitCenter.add(stepBack.direction)
+      }
+    }
+
+    grid.unit = savedUnit
+    grid.unitCenter = savedCenter
 
     res.foreach(grid.applyMove)
 

@@ -49,6 +49,10 @@ case class Unitt(
     Unitt(members.map(c => c.rotate(pivot, isClockWise)), pivot)
   }
 
+  def moveBy(delta: Cell): Unitt = {
+    Unitt(members.map(c => c.add(delta)), pivot.add(delta))
+  }
+
   // assumes offset coordinates
   def printMapTo(ps: PrintStream): Unit = {
     val lm = min(leftmost, pivot.x)
