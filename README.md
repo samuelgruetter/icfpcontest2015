@@ -14,6 +14,7 @@ sbt run-main MainVisualization
 ```
 
 Arrow right/left: next/previous step of simulation
+
 Arrow down/up: next/previous unit of simulation
 
 By [Christian Zommerfelds](https://github.com/zommerfelds) and [Samuel Gruetter](https://github.com/samuelgruetter/)
